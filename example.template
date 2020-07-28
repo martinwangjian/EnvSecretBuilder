@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: EnvSecretBuilder
+Parameters:
+  Image:
+    Type: String
+    Description: Docker Image
+  Envs:
+    Type: String
+    Description: Environment variables  
+    Default: 'A=1;B=2'
+  Secrets:
+    Type: String
+    Description: Secrets
+    Default: 'SECRET1=/RDE/Tests/DB/password;SECRET2=/RDE/Tests/DB/username'
+  ExecutionRoleArn:
+    Type: String
+    Description: ARN for Execution Role
+  TaskRoleArn:
+    Type: String
+    Description: ARN for Task Role
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:                ecs-task-definition-example
+      TaskRoleArn:           !Ref TaskRoleArn
+      ExecutionRoleArn:      !Ref ExecutionRoleArn
+      Cpu:                   256
+      RequiresCompatibilities:
+        - EC2
+      ContainerDefinitions:
+        - Name:              ecs-container-definition-example
+          Image:             !Ref Image
+          Essential:         true
+          Cpu:               256
+          Memory:            256
+          Environment:       !Ref Envs
+          Secrets:           !Ref Secrets
